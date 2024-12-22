@@ -1,0 +1,14 @@
+.jpg
+.idea/
+sanity_checks/
+stats/
+preds/
+output/
+.hdf5
+.pth
+models/
+.pyc
+model_weights/z_archive/
+scripts/z_archive/
+scripts/__pycache__/
+training_stats/z_archive/

@@ -46,7 +46,7 @@ import matplotlib.pyplot as plt
 from simple_unet_model import simple_unet_model
 from simple_multi_unet_model import multi_unet_model
 import segmentation_models as sm
-from unet.scripts.res_unet_attention import Attention_ResUNet, jacard_coef
+from res_unet_attention import Attention_ResUNet, jacard_coef
 from focal_loss import BinaryFocalLoss
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import Callback
@@ -422,8 +422,6 @@ plt.show()
 X_train, y_train = load_data(paths["multiclass"], "train")
 X_val, y_val = load_data(paths["multiclass"], "val")
 print("Preprocessing multiclass data for backbone model")
-X_train_pp = preprocess_input(X_train)
-X_val_pp = preprocess_input(X_val)
 n_classes = len(np.unique(y_train))
 activation = "softmax"
 y_train_cat = to_categorical(y_train, num_classes=n_classes)
@@ -531,68 +529,6 @@ plt.savefig(
         f"simp_unet_multi_{epochs}ep_B{batch_size}_{loss_n}loss_plot.png"),
     dpi=300)
 plt.show()
-
-
-'''
-U-Net with Resnet34 Backbone and Imagenet weights
-'''
-
-# adapt epochs and batch size to case and memory
-epochs = 50
-# epochs = 100
-batch_size = 16
-
-loss_n = "catfocCE"
-metr_n = "mIoU"
-
-unet_resnet_imagenet_multi = get_unet_resnet_imagenet(
-    n_classes, activation)
-new_input = Input(shape=(256, 256, 4))
-x = Conv2D(3, (1, 1), activation='linear', padding='same')(new_input)
-output = unet_resnet_imagenet_multi(x)
-unet_resnet_imagenet_multi = Model(inputs=new_input, outputs=output)
-metric = tf.keras.metrics.MeanIoU(num_classes=n_classes)
-unet_resnet_imagenet_multi.compile(
-    'Adam', 
-    loss=tf.keras.losses.CategoricalFocalCrossentropy(), 
-    metrics=[metric])
-print(unet_resnet_imagenet_multi.summary())
-print("Resnet34 U-Net with Imagenet weights for multi-class data running.")
-start = datetime.now()
-hist_unet_resnet_imagenet_multi=unet_resnet_imagenet_multi.fit(
-    X_train_pp, 
-    y_train_cat,
-    batch_size=batch_size, 
-    epochs=epochs,
-    verbose=1,
-    validation_data=(X_val_pp, y_val_cat))
-stop = datetime.now()
-print("Resnet34 U-Net with Imagenet weights for multi-class data finished.")
-execution_time = stop-start
-print(
-    "Execution time for Resnet34 U-Net with Imagenet weights for multi-class data:", 
-      execution_time)
-log_execution_time(
-    f"unet_resnet_imagenet_multi_{epochs}ep_B{batch_size}:{loss_n}loss", 
-    execution_time, # choose path for current case
-    # stat_output_dir_test_fits, 
-    stat_output_dir_final_fits
-)
-unet_resnet_imagenet_multi.save(
-    os.path.join( # choose path for current case
-        # model_output_dir_test_fits,
-        model_output_dir_final_fits,
-        f"unet_resnet_imagenet_multi_{epochs}ep_B{batch_size}_{loss_n}loss.hdf5"
-    )
-)
-save_hist_as_csv(
-    hist_unet_resnet_imagenet_multi, 
-    os.path.join( # choose path for current case
-        # stat_output_dir_test_fits,
-        stat_output_dir_final_fits,
-        f"unet_resnet_imagenet_multi_{epochs}ep_B{batch_size}_{loss_n}loss_hist.csv"
-    )
-)
 
 
 '''

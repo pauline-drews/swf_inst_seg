@@ -250,39 +250,40 @@ def process_images_and_masks(image_dir,
         image = tiff.imread(os.path.join(image_dir, image_file))
         mask = tiff.imread(mask_path)
 
+        # # Add padding
+        # # Padding values
+        # top_left_pad = 24
+        # bottom_right_pad = 25
+
+        # # Pad the image (RGB + NIR)
+        # padded_image = np.pad(
+        #     image,
+        #     pad_width=(
+        #         (top_left_pad, bottom_right_pad), 
+        #         (top_left_pad, bottom_right_pad), (0, 0)),
+        #     mode='constant',
+        #     constant_values=0.0
+        #     )
+
+        # # Pad the mask (multiclass)
+        # padded_mask = np.pad(
+        #     mask,
+        #     pad_width=(
+        #         (top_left_pad, bottom_right_pad), 
+        #         (top_left_pad, bottom_right_pad)),
+        #     mode='constant',
+        #     constant_values=0
+        #     )
+        
+        # print("padded image and mask shapes: ", 
+        #       padded_image.shape, padded_mask.shape)
+
         # Patchify the image and mask
         image_patches = patchify(
             image, (patch_size, patch_size, 4), step=patch_size)
         mask_patches = patchify(
             mask, (patch_size, patch_size), step=patch_size)
 
-        # Add padding
-        # Padding values
-        top_left_pad = 24
-        bottom_right_pad = 25
-
-        # Pad the image (RGB + NIR)
-        padded_image = np.pad(
-            image,
-            pad_width=(
-                (top_left_pad, bottom_right_pad), 
-                (top_left_pad, bottom_right_pad), (0, 0)),
-            mode='constant',
-            constant_values=0.0
-            )
-
-        # Pad the mask (multiclass)
-        padded_mask = np.pad(
-            mask,
-            pad_width=(
-                (top_left_pad, bottom_right_pad), 
-                (top_left_pad, bottom_right_pad)),
-            mode='constant',
-            constant_values=0
-            )
-        
-        print("padded image and mask shapes: ", 
-              padded_image.shape, padded_mask.shape)
 
         patch_count = 0  # Reset patch count for each new image
         

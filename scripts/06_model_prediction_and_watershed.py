@@ -46,7 +46,6 @@ import tifffile as tiff
 import numpy as np
 from patchify import patchify, unpatchify
 import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
 from matplotlib.colors import ListedColormap
 import matplotlib.patches as ptchs
 import cv2

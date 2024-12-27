@@ -54,6 +54,7 @@ from datetime import datetime
 from keras.utils import to_categorical
 from keras.models import Model
 from keras.layers import Input, Conv2D
+import keras
 # from sklearn.preprocessing import MinMaxScaler
 
 # Paths

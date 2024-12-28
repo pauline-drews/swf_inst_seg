@@ -52,9 +52,8 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import Callback
 from datetime import datetime 
 from keras.utils import to_categorical
-from keras.models import Model
-from keras.layers import Input, Conv2D
 import keras
+import tensorflow as tf
 # from sklearn.preprocessing import MinMaxScaler
 
 # Paths
@@ -67,7 +66,7 @@ paths = {
     # "trees_hedges": os.path.join(data_path, "trees_hedges/"),
     "multiclass": os.path.join(data_path, "multiclass/")
 }
-stat_output_dir_test_fits = "/data_hdd/pauline/swf/training_stats$ cd a_test_runs/"
+stat_output_dir_test_fits = "/data_hdd/pauline/swf/training_stats/a_test_runs/"
 stat_output_dir_final_fits = "/data_hdd/pauline/swf/training_stats/b_final_models/"
 model_output_dir_test_fits = "/data_hdd/pauline/swf/results/model_weights/test_runs/"
 model_output_dir_final_fits = "/data_hdd/pauline/swf/results/model_weights/b_final_models/"
@@ -258,13 +257,13 @@ data = pd.read_csv(hist_dir)
 plt.figure(figsize=(10, 5))
 plt.plot(data.index, 
          data['BinaryIoU'], 
-         label='Binary IoU')
+         label='IoU')
 plt.plot(data.index, 
          data['val_BinaryIoU'], 
-         label='Validation Binary IoU', 
+         label='Validation IoU', 
          linestyle='--')
 plt.xlabel('Epochs')
-plt.ylabel('Binary IoU')
+plt.ylabel('IoU')
 # choose title for current case
 # plt.title('Binary simple U-Net: training and validation metrics of test run')
 plt.title('Binary simple U-Net: training and validation metrics of final run')
@@ -316,6 +315,10 @@ loss_n = "binfoc"
 metr_n = "binIoU"
 
 att_res_unet_bin = get_att_res_unet (input_shape, n_classes)
+smooth_early_stopping = SmoothEarlyStopping( # only for final model run
+    monitor='val_loss', 
+    patience=10, # adapt such that model stops early enough but not too early
+    min_delta=0.025) # adapt -,,-
 att_res_unet_bin.compile(
     optimizer=Adam(learning_rate = 1e-2), 
     loss=BinaryFocalLoss(gamma=2), 
@@ -486,10 +489,10 @@ data = pd.read_csv(csv_dir)
 # Plotting Jacard Coefficient
 plt.figure(figsize=(10, 5))
 plt.plot(data.index, 
-         data['mean_io_u'], 
+         data['mean_io_u_1'], 
          label='Mean IoU')
 plt.plot(data.index, 
-         data['val_mean_io_u'], 
+         data['val_mean_io_u_1'], 
          label='Validation mean IoU', 
          linestyle='--')
 plt.xlabel('Epochs')

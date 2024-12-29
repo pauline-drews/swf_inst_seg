@@ -54,6 +54,8 @@ This is the project for my Master Thesis with the title:
  simple_unet_model.py are the model architectures for the models trained in 
  04_train_models.py.
 
+ Script z_some_plots.py is used to create some visualizations for the report.
+
  ##############################################################################
  2. Setup
 
